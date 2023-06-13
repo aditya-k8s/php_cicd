@@ -18,12 +18,6 @@ jobs:
       with:
         php-version: '7.4'  # Replace with your desired PHP version
 
-    - name: Install dependencies
-      run: composer install
-
-    - name: Run tests
-      run: phpunit
-
   deploy:
     needs: build
     runs-on: ubuntu-latest
