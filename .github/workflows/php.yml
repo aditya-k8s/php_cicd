@@ -1,4 +1,4 @@
-name: php ci cd
+name: Deploy to EC2
 
 on:
   push:
@@ -6,22 +6,16 @@ on:
       - main
 
 jobs:
-  build:
+  deploy:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Install rsync and sshpass
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y rsync sshpass
-  deploy:
-    needs: build
-    runs-on: ubuntu-latest
+      - name: Install rsync
+        run: sudo apt-get install -y rsync sshpass
 
-    steps:
-      - name: Deploy code on ec2
+      - name: Deploy code
         run: |
-          sshpass -p "${{ secrets.SSH_PRIVATE_KEY_PATH }}" rsync -e 'ssh -o StrictHostKeyChecking=no' -avz --delete-after --exclude '.git/' $GITHUB_WORKSPACE/path/to/source/ ubuntu@13.235.45.64:/var/www/html
+         sshpass -p "${{ secrets.SSH_PRIVATE_KEY }}" rsync -e 'ssh -o StrictHostKeyChecking=no' -avz --delete-after --exclude '.git/' $GITHUB_WORKSPACE/* "${{ secrets.SERVER_USERNAME }}"@"${{ secrets.SSH_HOST }}":"${{ secrets.SERVER_PATH }}"
