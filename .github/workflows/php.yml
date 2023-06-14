@@ -34,6 +34,6 @@ jobs:
 
     - name: Deploy to AWS EC2
       run: |
-        scp -i ${{ secrets.SSH_PRIVATE_KEY_PATH }} -r ./ ubuntu@13.235.45.64:/home/ubuntu/cicd.pem
+      
         ssh -i ${{ secrets.SSH_PRIVATE_KEY_PATH }} ubuntu@13.235.45.64:/var/www/html && ./deploy.sh'
 
