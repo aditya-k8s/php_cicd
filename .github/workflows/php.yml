@@ -1,4 +1,4 @@
-name: PHP CI/CD with AWS Deployment
+name: php ci cd
 
 on:
   push:
@@ -8,32 +8,20 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    
+
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v2
+      - name: Checkout code
+        uses: actions/checkout@v2
 
-    - name: Set up PHP
-      uses: shivammathur/setup-php@v2
-      with:
-        php-version: '8.1'  # Replace with your desired PHP version
-
-   
-
+      - name: Install rsync and sshpass
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y rsync sshpass
   deploy:
     needs: build
     runs-on: ubuntu-latest
 
     steps:
-    - name: Configure AWS credentials
-      uses: aws-actions/configure-aws-credentials@v1
-      with:
-        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        aws-region: 'ap-south-1'  # Replace with your desired AWS region
-
-    - name: Deploy to AWS EC2
-      run: |
-      
-        ssh  ${{ secrets.SSH_PRIVATE_KEY_PATH }} ubuntu@13.235.45.64:/var/www/html && ./deploy.sh'
-
+      - name: Deploy code on ec2
+        run: |
+          sshpass -p "${{ secrets.SSH_PRIVATE_KEY_PATH }}" rsync -e 'ssh -o StrictHostKeyChecking=no' -avz --delete-after --exclude '.git/' $GITHUB_WORKSPACE/path/to/source/ ubuntu@13.235.45.64:/var/www/html
