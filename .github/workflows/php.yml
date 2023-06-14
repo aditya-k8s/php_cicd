@@ -1,4 +1,4 @@
-name: PHP CI/CD with AWS Deployment
+name: CI/CD Pipeline
 
 on:
   push:
@@ -8,29 +8,35 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    
-    steps:
-    - name: Checkout repository
-      uses: actions/checkout@v2
 
-    - name: Set up PHP
-      uses: shivammathur/setup-php@v2
-      with:
-        php-version: '7.4'  # Replace with your desired PHP version
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 8.1
+
 
   deploy:
-    needs: build
     runs-on: ubuntu-latest
 
-    steps:
-    - name: Configure AWS credentials
-      uses: aws-actions/configure-aws-credentials@v1
-      with:
-        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        aws-region: 'ap-south-1'  # Replace with your desired AWS region
+    needs: build
 
-    - name: Deploy to AWS EC2
-      run: |
-        scp -i ${{ secrets.SSH_PRIVATE_KEY_PATH }} -r ./ ubuntu@15.206.145.223:/var/www/html
-        ssh -i ${{ secrets.SSH_PRIVATE_KEY_PATH }} ubuntu@15.206.145.223:/var/www/html && ./deploy.sh'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ap-south-1
+
+      - name: Deploy to EC2 instance
+        run: |
+          scp -i ${{ secrets.SSH_PRIVATE_KEY }} -r ./var/www/html/ ubuntu@13.235.45.64:~/var/www/html/
+          ssh -i ${{ secrets.SSH_PRIVATE_KEY }} ubuntu@13.235.45.64 "cd ~/var/www/html/ && ./deploy_script.sh"
+
