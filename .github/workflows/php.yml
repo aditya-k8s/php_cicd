@@ -35,5 +35,5 @@ jobs:
     - name: Deploy to AWS EC2
       run: |
       
-        ssh -i ${{ secrets.SSH_PRIVATE_KEY_PATH }} ubuntu@13.235.45.64:/var/www/html && ./deploy.sh'
+        ssh  ${{ secrets.SSH_PRIVATE_KEY_PATH }} ubuntu@13.235.45.64:/var/www/html && ./deploy.sh'
 
