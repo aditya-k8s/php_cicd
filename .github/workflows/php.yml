@@ -1,4 +1,4 @@
-name: CI/CD Pipeline
+name: PHP CI/CD Pipeline
 
 on:
   push:
@@ -13,8 +13,16 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
- 
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: 8.1
 
+      - name: Install dependencies
+        run: composer install --no-dev
+
+      - name: Run tests
+        run: vendor/bin/phpunit
 
   deploy:
     runs-on: ubuntu-latest
@@ -22,13 +30,16 @@ jobs:
     needs: build
 
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up SSH
+        uses: webfactory/ssh-agent@v0.5.0
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
       - name: Deploy to EC2 instance
-  run: |
-    scp -r -i ${{ secrets.SSH_PRIVATE_KEY }} ./var/www/html/ ubuntu@13.235.45.64:~/var/www/html/
-    ssh -i ${{ secrets.SSH_PRIVATE_KEY }} ubuntu@13.235.45.64 "cd ~/var/www/html/ && ./deploy_script.sh"
-  shell: bash
-  env:
-    AWS_DEFAULT_REGION: ap-south-1
-    AWS_REGION: ap-south-1
-    AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-    AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        run: |
+          scp -r -i ${{ secrets.SSH_PRIVATE_KEY }} ./ ubuntu@13.235.45.64:/var/www/html/
+          ssh -i ${{ secrets.SSH_PRIVATE_KEY }} ubuntu@13.235.45.64 "cd /var/www/html && ./deploy_script.sh"
+
