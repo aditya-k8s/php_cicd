@@ -34,6 +34,6 @@ jobs:
 
       - name: Deploy to EC2 instance
         run: |
-          scp -i ${{ secrets.SSH_PRIVATE_KEY }} -r ./var/www/html/ ubuntu@13.235.45.64:~/var/www/html/
-          ssh -i ${{ secrets.SSH_PRIVATE_KEY }} ubuntu@13.235.45.64 "cd ~/var/www/html/ && ./deploy_script.sh"
+          scp  ${{ secrets.SSH_PRIVATE_KEY }} -r ./var/www/html/ ubuntu@13.235.45.64:~/var/www/html/
+          ssh  ${{ secrets.SSH_PRIVATE_KEY }} ubuntu@13.235.45.64 "cd ~/var/www/html/ && ./deploy_script.sh"
 
