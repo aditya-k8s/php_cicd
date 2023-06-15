@@ -16,9 +16,8 @@ jobs:
     - name: Set up PHP
       uses: shivammathur/setup-php@v2
       with:
-        php-version: '8.1'  # Replace with your desired PHP version
+        php-version: '7.4'  # Replace with your desired PHP version
 
-    
   deploy:
     needs: build
     runs-on: ubuntu-latest
@@ -31,10 +30,10 @@ jobs:
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         aws-region: 'ap-south-1'  # Replace with your desired AWS region
 
+    - name: Install SSH client
+      run: sudo apt-get install -y openssh-client
+
     - name: Deploy to AWS EC2
       run: |
-        sudo apt-get update
-        sudo apt-get install -y openssh-client
-
         scp -o StrictHostKeyChecking=no -i ${{ secrets.SSH_PRIVATE_KEY_PATH }} -r ./* ubuntu@3.111.58.254:/var/www/html/
-        ssh -o StrictHostKeyChecking=no -i ${{ secrets.SSH_PRIVATE_KEY_PATH }} ubuntu@3.111.58.254:/var/www/html/ && ./deploy.sh'
+        ssh -o StrictHostKeyChecking=no -i ${{ secrets.SSH_PRIVATE_KEY_PATH }} ubuntu@3.111.58.254 'cd /var/www/html && ./deploy.sh'
