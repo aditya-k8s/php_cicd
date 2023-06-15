@@ -32,5 +32,5 @@ jobs:
 
     - name: Deploy to AWS EC2
       run: |
-        scp -i ${{ secrets.SSH_PRIVATE_KEY_PATH }} -r ./ ubuntu@3.111.58.254:/var/www/html/
-        ssh -i ${{ secrets.SSH_PRIVATE_KEY_PATH }} ubuntu@3.111.58.254:/var/www/html/ && ./deploy.sh'
+        scp -i *** ${{ secrets.SSH_PRIVATE_KEY_PATH }} -r ./ ubuntu@3.111.58.254:/var/www/html/
+        ssh -i *** ${{ secrets.SSH_PRIVATE_KEY_PATH }} ubuntu@3.111.58.254:/var/www/html/ && ./deploy.sh'
