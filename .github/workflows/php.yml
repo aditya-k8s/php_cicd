@@ -37,8 +37,7 @@ jobs:
         script: |
           cd /var/www/html
           git pull
-          composer install --no-dev
-          # Additional deployment steps...
+        
 
     - name: Restart web server
       uses: appleboy/ssh-action@master
