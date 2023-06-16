@@ -1,4 +1,4 @@
-name: PHP CI/CD with AWS Deployment
+name: CI/CD Pipeline
 
 on:
   push:
@@ -8,7 +8,7 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-
+    
     steps:
     - name: Checkout repository
       uses: actions/checkout@v2
@@ -16,22 +16,22 @@ jobs:
     - name: Set up PHP
       uses: shivammathur/setup-php@v2
       with:
-        php-version: '8.1'  # Replace with your desired PHP version
+        php-version: '8.1' # Replace with your desired PHP version
 
+   
   deploy:
     needs: build
     runs-on: ubuntu-latest
 
     steps:
-    - name: Configure AWS credentials
-      uses: aws-actions/configure-aws-credentials@v1
+    - name: Connect to AWS EC2 instance
+      uses: appleboy/ssh-action@master
       with:
-        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        aws-region: 'ap-south-1'  # Replace with your desired AWS region
+        host: ${{ secrets.AWS_EC2_HOST }} # Replace with your EC2 instance IP or hostname
+        username: ${{ secrets.AWS_EC2_USERNAME }} # Replace with your EC2 instance username
+        key: ${{ secrets.AWS_EC2_PRIVATE_KEY }} # Replace with your EC2 instance private key
+        port: 22
+        
 
-    - name: Deploy to AWS EC2
-      run: |
-        ssh-keyscan 3.111.69.219 >> ~/.ssh/known_hosts
-        scp -o StrictHostKeyChecking=no -r ./* ubuntu@3.111.69.219:/var/www/testing/
-        ssh -o StrictHostKeyChecking=no ubuntu@3.111.69.219 'cd /var/www/testing && ./deploy.sh'
+    - name: Verify deployment
+      run: curl http://AWS_EC2_HOST/ # Replace <EC2-IP> with your EC2 instance IP or hostname
