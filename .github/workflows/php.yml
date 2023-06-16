@@ -18,17 +18,37 @@ jobs:
       with:
         php-version: '8.1' # Replace with your desired PHP version
 
-   
+  
+
   deploy:
     needs: build
     runs-on: ubuntu-latest
 
     steps:
-    - name: Connect to AWS EC2 instance
+    - name: Connect to remote server
       uses: appleboy/ssh-action@master
       with:
-        host: ${{ secrets.AWS_EC2_HOST }} # Replace with your EC2 instance IP or hostname
-        username: ${{ secrets.AWS_EC2_USERNAME }} # Replace with your EC2 instance username
-        key: ${{ secrets.AWS_EC2_PRIVATE_KEY }} # Replace with your EC2 instance private key
+        host: ${{ secrets.AWS_EC2_HOST }} # Replace with your remote server IP or hostname
+        username: ${{ secrets.AWS_EC2_USERNAME }} # Replace with your remote server username
+        key: ${{ secrets.AWS_EC2_PRIVATE_KEY }} # Replace with your private SSH key
         port: 22
-        
+
+        # Run deployment commands on the remote server
+        script: |
+          cd /var/www/html
+          git pull
+          composer install --no-dev
+          # Additional deployment steps...
+
+    - name: Restart web server
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.AWS_EC2_HOST }} # Replace with your remote server IP or hostname
+        username: ${{ secrets.AWS_EC2_USERNAME }} # Replace with your remote server username
+        key: ${{ secrets.AWS_EC2_PRIVATE_KEY }} # Replace with your private SSH key
+        port: 22
+
+        # Restart the web server (e.g., Apache or Nginx)
+        script: |
+          sudo systemctl restart apache2
+
