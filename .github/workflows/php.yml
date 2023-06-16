@@ -16,7 +16,7 @@ jobs:
     - name: Set up PHP
       uses: shivammathur/setup-php@v2
       with:
-        php-version: '7.4'  # Replace with your desired PHP version
+        php-version: '8.1'  # Replace with your desired PHP version
 
   deploy:
     needs: build
@@ -35,5 +35,5 @@ jobs:
 
     - name: Deploy to AWS EC2
       run: |
-        scp -o StrictHostKeyChecking=no -i ${{ secrets.SSH_PRIVATE_KEY_PATH }} -r ./* ubuntu@3.111.58.254:/var/www/html/
-        ssh -o StrictHostKeyChecking=no -i ${{ secrets.SSH_PRIVATE_KEY_PATH }} ubuntu@3.111.58.254 'cd /var/www/html && ./deploy.sh'
+        scp -o StrictHostKeyChecking=no -i ${{ secrets.SSH_PRIVATE_KEY_PATH }} -r ./* ubuntu@3.111.69.219:/var/www/testing/
+        ssh -o StrictHostKeyChecking=no -i ${{ secrets.SSH_PRIVATE_KEY_PATH }} ubuntu@3.111.69.219 'cd /var/www/testing && ./deploy.sh'
