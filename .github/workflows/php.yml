@@ -36,7 +36,11 @@ jobs:
         # Run deployment commands on the remote server
         script: |
           cd /var/www/html
-          git pull
+            composer install --no-dev
+            # Additional deployment steps...
+            cp .env.production .env
+            php artisan migrate --force
+
         
 
     - name: Restart web server
@@ -49,5 +53,6 @@ jobs:
 
         # Restart the web server (e.g., Apache or Nginx)
         script: |
+          
           sudo systemctl restart apache2
 
